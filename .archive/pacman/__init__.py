@@ -9,6 +9,8 @@ Otherwise albert will try to find for packages matching the filter. For more inf
 
 Synopsis: <trigger> [filter]"""
 
+#  Copyright (c) 2022 Manuel Schneider
+
 import re
 import subprocess
 import time
