@@ -8,12 +8,12 @@ import pathlib
 from albert import Action, StandardItem, PluginInstance, TriggerQueryHandler, runTerminal, openUrl
 
 md_iid = "3.0"
-md_version = "2.0"
+md_version = "2.1"
 md_name = "PacMan"
 md_description = "Search, install and remove packages"
 md_license = "MIT"
 md_url = "https://github.com/albertlauncher/albert-plugin-python-pacman"
-md_authors = "@ManuelSchneid3r"
+md_authors = ["@ManuelSchneid3r"]
 md_bin_dependencies = ["pacman", "expac"]
 
 
