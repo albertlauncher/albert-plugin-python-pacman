@@ -5,9 +5,10 @@ import subprocess
 from time import sleep
 import pathlib
 
-from albert import Action, StandardItem, PluginInstance, TriggerQueryHandler, runTerminal, openUrl
+from albert import Action, StandardItem, PluginInstance, TriggerQueryHandler, runTerminal, openUrl, makeComposedIcon, \
+    makeGraphemeIcon, makeImageIcon
 
-md_iid = "3.0"
+md_iid = "4.0"
 md_version = "2.1"
 md_name = "PacMan"
 md_description = "Search, install and remove packages"
@@ -25,11 +26,10 @@ class Plugin(PluginInstance, TriggerQueryHandler):
     def __init__(self):
         PluginInstance.__init__(self)
         TriggerQueryHandler.__init__(self)
-        self.iconUrls = [
-            "xdg:archlinux-logo",
-            "xdg:system-software-install",
-            f"file:{pathlib.Path(__file__).parent}/arch.svg"
-        ]
+
+    @staticmethod
+    def makeIcon():
+        return makeComposedIcon(makeImageIcon(pathlib.Path(__file__).parent / "arch.svg"), makeGraphemeIcon("📦"))
 
     def synopsis(self, query):
         return "<package name>"
@@ -46,7 +46,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 id="%s-update" % self.id,
                 text="Pacman package manager",
                 subtext="Enter the package you are looking for or hit enter to update.",
-                iconUrls=self.iconUrls,
+                iconFactory=Plugin.makeIcon,
                 actions=[
                     Action("up-nc", "Update packages (no confirm)",
                            lambda: runTerminal("sudo pacman -Syu --noconfirm")),
@@ -94,7 +94,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
 
             item = StandardItem(
                 id="%s_%s_%s" % (self.id, pkg_repo, pkg_name),
-                iconUrls=self.iconUrls,
+                iconFactory=Plugin.makeIcon,
                 text="%s %s [%s]" % (pkg_name, pkg_vers, pkg_repo),
                 subtext=f"{pkg_desc} [Installed]" if pkg_installed else f"{pkg_desc}",
                 inputActionText="%s%s" % (query.trigger, pkg_name),
@@ -109,6 +109,6 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 id="%s-empty" % self.id,
                 text="Search on archlinux.org",
                 subtext="No results found in the local database",
-                iconUrls=self.iconUrls,
+                iconFactory=Plugin.makeIcon,
                 actions=[Action("search", "Search on archlinux.org", lambda: openUrl(f"{self.pkgs_url}?q={stripped}"))]
             ))
