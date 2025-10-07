@@ -97,7 +97,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 iconFactory=Plugin.makeIcon,
                 text="%s %s [%s]" % (pkg_name, pkg_vers, pkg_repo),
                 subtext=f"{pkg_desc} [Installed]" if pkg_installed else f"{pkg_desc}",
-                inputActionText="%s%s" % (query.trigger, pkg_name),
+                inputActionText=pkg_name,
                 actions=actions
             )
             items.append(item)
