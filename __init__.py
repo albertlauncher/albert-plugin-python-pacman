@@ -46,7 +46,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 id="%s-update" % self.id,
                 text="Pacman package manager",
                 subtext="Enter the package you are looking for or hit enter to update.",
-                iconFactory=Plugin.makeIcon,
+                icon_factory=Plugin.makeIcon,
                 actions=[
                     Action("up-nc", "Update packages (no confirm)",
                            lambda: runTerminal("sudo pacman -Syu --noconfirm")),
@@ -94,10 +94,10 @@ class Plugin(PluginInstance, TriggerQueryHandler):
 
             item = StandardItem(
                 id="%s_%s_%s" % (self.id, pkg_repo, pkg_name),
-                iconFactory=Plugin.makeIcon,
+                icon_factory=Plugin.makeIcon,
                 text="%s %s [%s]" % (pkg_name, pkg_vers, pkg_repo),
                 subtext=f"{pkg_desc} [Installed]" if pkg_installed else f"{pkg_desc}",
-                inputActionText=pkg_name,
+                input_action_text=pkg_name,
                 actions=actions
             )
             items.append(item)
@@ -109,6 +109,6 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 id="%s-empty" % self.id,
                 text="Search on archlinux.org",
                 subtext="No results found in the local database",
-                iconFactory=Plugin.makeIcon,
+                icon_factory=Plugin.makeIcon,
                 actions=[Action("search", "Search on archlinux.org", lambda: openUrl(f"{self.pkgs_url}?q={stripped}"))]
             ))
