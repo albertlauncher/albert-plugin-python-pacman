@@ -9,7 +9,7 @@ from albert import Action, StandardItem, PluginInstance, TriggerQueryHandler, ru
     makeGraphemeIcon, makeImageIcon
 
 md_iid = "4.0"
-md_version = "2.1"
+md_version = "2.1.1"
 md_name = "PacMan"
 md_description = "Search, install and remove packages"
 md_license = "MIT"
