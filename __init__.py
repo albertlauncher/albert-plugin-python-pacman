@@ -5,10 +5,10 @@ import subprocess
 from time import sleep
 import pathlib
 
-from albert import Action, StandardItem, PluginInstance, TriggerQueryHandler, runTerminal, openUrl, makeComposedIcon, \
+from albert import Action, StandardItem, PluginInstance, GeneratorQueryHandler, runTerminal, openUrl, makeComposedIcon, \
     makeGraphemeIcon, makeImageIcon
 
-md_iid = "4.0"
+md_iid = "5.0"
 md_version = "2.1.1"
 md_name = "PacMan"
 md_description = "Search, install and remove packages"
@@ -19,13 +19,13 @@ md_authors = ["@ManuelSchneid3r"]
 md_bin_dependencies = ["pacman", "expac"]
 
 
-class Plugin(PluginInstance, TriggerQueryHandler):
+class Plugin(PluginInstance, GeneratorQueryHandler):
 
     pkgs_url = "https://www.archlinux.org/packages/"
 
     def __init__(self):
         PluginInstance.__init__(self)
-        TriggerQueryHandler.__init__(self)
+        GeneratorQueryHandler.__init__(self)
 
     @staticmethod
     def makeIcon():
@@ -37,23 +37,25 @@ class Plugin(PluginInstance, TriggerQueryHandler):
     def defaultTrigger(self):
         return "pac "
 
-    def handleTriggerQuery(self, query):
-        stripped = query.string.strip()
+    def items(self, ctx):
+        query = ctx.query.strip()
 
         # Update item on empty queries
-        if not stripped:
-            query.add(StandardItem(
-                id="%s-update" % self.id,
-                text="Pacman package manager",
-                subtext="Enter the package you are looking for or hit enter to update.",
-                icon_factory=Plugin.makeIcon,
-                actions=[
-                    Action("up-nc", "Update packages (no confirm)",
-                           lambda: runTerminal("sudo pacman -Syu --noconfirm")),
-                    Action("up", "Update packages", lambda: runTerminal("sudo pacman -Syu")),
-                    Action("up-cache", "Update pacman cache", lambda: runTerminal("sudo pacman -Sy"))
-                ]
-            ))
+        if not query:
+            yield [
+                StandardItem(
+                    id="%s-update" % self.id,
+                    text="Pacman package manager",
+                    subtext="Enter the package you are looking for or hit enter to update.",
+                    icon_factory=Plugin.makeIcon,
+                    actions=[
+                        Action("up-nc", "Update packages (no confirm)",
+                               lambda: runTerminal("sudo pacman -Syu --noconfirm")),
+                        Action("up", "Update packages", lambda: runTerminal("sudo pacman -Syu")),
+                        Action("up-cache", "Update pacman cache", lambda: runTerminal("sudo pacman -Sy"))
+                    ]
+                )
+            ]
             return
 
         # avoid rate limiting
@@ -63,9 +65,9 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 return
 
         # Get data. Results are sorted, so we can merge in O(n)
-        proc_s = subprocess.Popen(["expac", "-Ss", "%n\t%v\t%r\t%d\t%u\t%E", stripped],
+        proc_s = subprocess.Popen(["expac", "-Ss", "%n\t%v\t%r\t%d\t%u\t%E", query],
                                   stdout=subprocess.PIPE, universal_newlines=True)
-        proc_q = subprocess.Popen(["expac", "-Qs", "%n", stripped], stdout=subprocess.PIPE, universal_newlines=True)
+        proc_q = subprocess.Popen(["expac", "-Qs", "%n", query], stdout=subprocess.PIPE, universal_newlines=True)
         proc_q.wait()
 
         items = []
@@ -73,7 +75,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
         remote_pkgs = [tuple(line.split('\t')) for line in proc_s.stdout.read().split('\n')[:-1]]  # newline at end
 
         for pkg_name, pkg_vers, pkg_repo, pkg_desc, pkg_purl, pkg_deps in remote_pkgs:
-            if stripped not in pkg_name:
+            if query not in pkg_name:
                 continue
 
             pkg_installed = True if pkg_name in local_pkgs else False
@@ -103,12 +105,14 @@ class Plugin(PluginInstance, TriggerQueryHandler):
             items.append(item)
 
         if items:
-            query.add(items)
+            yield items
         else:
-            query.add(StandardItem(
-                id="%s-empty" % self.id,
-                text="Search on archlinux.org",
-                subtext="No results found in the local database",
-                icon_factory=Plugin.makeIcon,
-                actions=[Action("search", "Search on archlinux.org", lambda: openUrl(f"{self.pkgs_url}?q={stripped}"))]
-            ))
+            yield [
+                StandardItem(
+                    id="%s-empty" % self.id,
+                    text="Search on archlinux.org",
+                    subtext="No results found in the local database",
+                    icon_factory=Plugin.makeIcon,
+                    actions=[Action("search", "Search on archlinux.org", lambda: openUrl(f"{self.pkgs_url}?q={query}"))]
+                )
+            ]
