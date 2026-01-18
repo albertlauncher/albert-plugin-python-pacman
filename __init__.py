@@ -5,8 +5,7 @@ import subprocess
 from time import sleep
 import pathlib
 
-from albert import Action, StandardItem, PluginInstance, GeneratorQueryHandler, runTerminal, openUrl, makeComposedIcon, \
-    makeGraphemeIcon, makeImageIcon
+from albert import *
 
 md_iid = "5.0"
 md_version = "2.1.1"
@@ -29,7 +28,7 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
 
     @staticmethod
     def makeIcon():
-        return makeComposedIcon(makeImageIcon(pathlib.Path(__file__).parent / "arch.svg"), makeGraphemeIcon("📦"))
+        return Icon.composed(Icon.image(pathlib.Path(__file__).parent / "arch.svg"), Icon.grapheme("📦"))
 
     def synopsis(self, query):
         return "<package name>"
