@@ -8,7 +8,7 @@ import pathlib
 from albert import *
 
 md_iid = "5.0"
-md_version = "2.1.1"
+md_version = "2.1.2"
 md_name = "PacMan"
 md_description = "Search, install and remove packages"
 md_license = "MIT"
