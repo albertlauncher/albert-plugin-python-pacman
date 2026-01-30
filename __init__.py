@@ -60,7 +60,7 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
         # avoid rate limiting
         for _ in range(50):
             sleep(0.01)
-            if not query.isValid:
+            if not ctx.isValid:
                 return
 
         # Get data. Results are sorted, so we can merge in O(n)
