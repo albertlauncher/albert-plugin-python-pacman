@@ -15,6 +15,7 @@ md_license = "MIT"
 md_url = "https://github.com/albertlauncher/albert-plugin-python-pacman"
 md_readme_url = "https://github.com/albertlauncher/albert-plugin-python-pacman/blob/main/README.md"
 md_authors = ["@ManuelSchneid3r"]
+md_maintainers = ["@pete-hamlin"]
 md_bin_dependencies = ["pacman", "expac"]
 
 
