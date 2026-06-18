@@ -7,7 +7,7 @@ import pathlib
 
 from albert import *
 
-md_iid = "5.0"
+md_iid = "6.0"
 md_version = "2.1.4"
 md_name = "PacMan"
 md_description = "Search, install and remove packages"
@@ -61,7 +61,7 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
         # avoid rate limiting
         for _ in range(50):
             sleep(0.01)
-            if not ctx.isValid:
+            if not ctx.is_valid:
                 return
 
         # Get data. Results are sorted, so we can merge in O(n)
